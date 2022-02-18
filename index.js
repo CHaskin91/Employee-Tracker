@@ -1,4 +1,4 @@
-const orm = require('./config/orm');
+const orm = require('./config/orm.js');
 const inquirer = require('inquirer');
 
 // This function generates the top-level choices for the user. Upon selecting any of them, a new function is executed
