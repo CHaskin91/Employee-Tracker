@@ -102,6 +102,43 @@ getEmployees: function() {
         });
     });
 },
+// WHEN I choose to view all roles
+// THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
+viewRoles: function() {
+    return new Promise(function(resolve, reject) {
+        const queryString = "SELECT roles.id, title, salary, name FROM roles LEFT JOIN departments ON roles.department_id = departments.id";
+        connection.query(queryString, function(err, result) {
+            if (err) {
+                return reject(err);
+            }
+            const newTable = [];
+            for (let i=0; i<result.length; i++) {
+                const roleObj = {
+                    "ID": result[i].id,
+                    "Title": result[i].title,
+                    "Salary": result[i].salary,
+                    "Department": result[i].name
+                };
+                newTable.push(roleObj);
+            }
+            console.table(newTable);
+            return resolve();
+        });
+    });
+},
+getRoles: function() {
+    return new Promise(function(resolve, reject) {
+        const queryString = "SELECT * FROM roles";
+        connection.query(queryString, function(err,result) {
+            if (err) {
+                return reject(err);
+            }
+            return resolve(result);
+        });
+    });
+},
+// WHEN I choose to view all departments
+// THEN I am presented with a formatted table showing department names and department ids
 
 }
 
