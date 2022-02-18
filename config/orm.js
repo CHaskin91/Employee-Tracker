@@ -48,7 +48,60 @@ const orm = {
 
 // WHEN I choose to view employees
 // THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
-
+viewEmployees: function() {
+    return new Promise(function(resolve, reject) {
+        const queryString = 'SELECT employees.id, first_name, last_name, title, salary, name, manager_id FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.department_id = departments.id';
+        connection.query(queryString, function(err, result) {
+            if (err) {
+                return reject(err);
+            }
+            let newTable = [];
+            for (let i=0; i<result.length; i++) {
+                let manager_name = "";
+                if (result[i].manager_id !== null) {
+                    for (let j=0; j<result.length; j++) {
+                        if (result[j].id === result[i].manager_id) {
+                            manager_name = result[j].first_name + " " + result[j].last_name;
+                        }
+                    }
+                } else {
+                    manager_name = "Not Available";
+                }
+                const tableElement = {
+                    "Employee ID": result[i].id,
+                    "First Name": result[i].first_name,
+                    "Last Name": result[i].last_name,
+                    "Title": result[i].title,
+                    "Salary": result[i].salary,
+                    "Department": result[i].name,
+                    "Manager": manager_name
+                };
+                newTable.push(tableElement);
+            }
+            console.table(newTable);
+            return resolve();
+        });
+    });
+},
+getEmployees: function() {
+    return new Promise(function(resolve, reject) {
+        const queryString = "SELECT * FROM employees";
+        connection.query(queryString, function(err, result) {
+            if (err) {
+                return reject(err);
+            }
+            const empArray = [];
+            for (let i=0; i<result.length; i++) {
+                const empObj = {
+                    id: result[i].id,
+                    name: result[i].first_name + " " + result[i].last_name
+                };
+                empArray.push(empObj);
+            }
+            return resolve(empArray);
+        });
+    });
+},
 
 }
 
