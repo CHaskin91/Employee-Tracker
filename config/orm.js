@@ -139,6 +139,31 @@ getRoles: function() {
 },
 // WHEN I choose to view all departments
 // THEN I am presented with a formatted table showing department names and department ids
+viewDepartments: function() {
+    return new Promise(function(resolve, reject) {
+        const queryString = "SELECT * FROM departments";
+        connection.query(queryString, function(err, result) {
+            if (err) {
+                return reject(err);
+            }
+            console.table(result);
+            return resolve();
+        });
+    });
+},
+getDepartments: function() {
+    return new Promise(function(resolve, reject) {
+        const queryString = "SELECT * FROM departments";
+        connection.query(queryString, function(err, result) {
+            if (err) {
+                return reject(err);
+            }
+            return resolve(result);
+        });
+    });
+},
+// WHEN I choose to update an employee role
+// THEN I am prompted to select an employee to update and their new role and this information is updated in the database
 
 }
 
