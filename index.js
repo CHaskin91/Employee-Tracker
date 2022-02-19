@@ -110,4 +110,32 @@ function addEmployeePrompt() {
         });
 }
 
+// WHEN I choose to add a department
+// THEN I am prompted to enter the name of the department and that department is added to the database
+function addDepartmentPrompt() {
+    orm.getDepartments()
+    .then(function(response) {
+        const deptArray = [];
+        for (let i=0; i<response.length; i++) {
+            deptArray.push(response[i].name);
+        }
+        inquirer.prompt({
+            type: "input",
+            message: "Enter the name of the department you would like to add",
+            name: "deptName"
+        }).then(function({deptName}) {
+            if (deptArray.includes(deptName)) {
+                console.log("There is already a department with that name!\n");
+                mainMenu();
+            } else {
+                orm.addDepartment(deptName)
+                .then(function() {
+                    console.log("\n");
+                    mainMenu();
+                });
+            }
+        });
+    });
+}
+
 mainMenu();
