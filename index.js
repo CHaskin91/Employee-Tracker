@@ -114,28 +114,77 @@ function addEmployeePrompt() {
 // THEN I am prompted to enter the name of the department and that department is added to the database
 function addDepartmentPrompt() {
     orm.getDepartments()
-    .then(function(response) {
-        const deptArray = [];
-        for (let i=0; i<response.length; i++) {
-            deptArray.push(response[i].name);
-        }
-        inquirer.prompt({
-            type: "input",
-            message: "Enter the name of the department you would like to add",
-            name: "deptName"
-        }).then(function({deptName}) {
-            if (deptArray.includes(deptName)) {
-                console.log("There is already a department with that name!\n");
-                mainMenu();
-            } else {
-                orm.addDepartment(deptName)
-                .then(function() {
-                    console.log("\n");
-                    mainMenu();
-                });
+        .then(function (response) {
+            const deptArray = [];
+            for (let i = 0; i < response.length; i++) {
+                deptArray.push(response[i].name);
             }
+            inquirer.prompt({
+                type: "input",
+                message: "Enter the name of the department you would like to add",
+                name: "deptName"
+            }).then(function ({ deptName }) {
+                if (deptArray.includes(deptName)) {
+                    console.log("There is already a department with that name!\n");
+                    mainMenu();
+                } else {
+                    orm.addDepartment(deptName)
+                        .then(function () {
+                            console.log("\n");
+                            mainMenu();
+                        });
+                }
+            });
         });
-    });
 }
+
+// WHEN I choose to add a role
+// THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
+function addRolePrompt() {
+    orm.getRoles()
+        .then(function (roles) {
+            const roleArray = [];
+            for (let i = 0; i < roles.length; i++) {
+                roleArray.push(roles[i].title);
+            }
+            orm.getDepartments()
+                .then(function (deptArray) {
+                    const deptNames = [];
+                    for (let i = 0; i < deptArray.length; i++) {
+                        deptNames.push(deptArray[i].name);
+                    }
+                    inquirer.prompt([{
+                        type: "input",
+                        message: "Enter the name of the Role you would like to add",
+                        name: "title"
+                    },
+                    {
+                        type: "input",
+                        message: "Enter the Annual Salary of the new Role",
+                        name: "salary"
+                    },
+                    {
+                        type: "list",
+                        message: "Select the Department in which the new Role will work",
+                        choices: deptNames,
+                        name: "department"
+                    }]).then(function ({ title, salary, department }) {
+                        const deptId = deptArray[deptNames.indexOf(department)].id;
+                        if (roleArray.includes(title)) {
+                            console.log("Error - that Title already exists!\n");
+                            mainMenu();
+                        } else {
+                            orm.addRole(title, salary, deptId)
+                                .then(function () {
+                                    console.log("\n");
+                                    mainMenu();
+                                });
+                        }
+                    });
+                });
+        });
+}
+
+
 
 mainMenu();
