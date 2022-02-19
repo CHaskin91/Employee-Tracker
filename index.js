@@ -185,6 +185,42 @@ function addRolePrompt() {
         });
 }
 
-
+// WHEN I choose to update an employee role
+// THEN I am prompted to select an employee to update and their new role and this information is updated in the database
+function updateRolePrompt() {
+    orm.getEmployees()
+    .then(function(res) {
+        const empArray = [];
+        for (let i=0; i<res.length; i++) {
+            empArray.push(res[i].name);
+        }
+        orm.getRoles()
+        .then(function(response) {
+            const roleArray = [];
+            for (let i=0; i<response.length; i++) {
+                roleArray.push(response[i].title);
+            }
+            inquirer.prompt([{
+                type: "list",
+                message: "Choose the Employee whose Role you would like to update",
+                choices: empArray,
+                name: "employee"
+            },
+            {
+                type: "list",
+                message: "Select the Employee's new Role",
+                choices: roleArray,
+                name: "role"
+            }]).then(function({employee, role}) {
+                const empId = res[empArray.indexOf(employee)].id;
+                orm.updateRole(empId, role)
+                .then(function() {
+                    console.log("\n");
+                    mainMenu();
+                });
+            });
+        });
+    });
+}
 
 mainMenu();
